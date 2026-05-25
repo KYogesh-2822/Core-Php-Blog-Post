@@ -42,10 +42,20 @@ FROM php:8.2.12-apache
 
 # Use the default production configuration for PHP runtime arguments, see
 # https://github.com/docker-library/docs/tree/master/php#configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Copy app files from the app directory.
-COPY . /var/www/html
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+RUN a2enmod rewrite
+
+# ─── Critical: allows .htaccess to work ───
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+RUN apt-get update && apt-get install -y \
+    libpng-dev libjpeg-dev libwebp-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install gd
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/

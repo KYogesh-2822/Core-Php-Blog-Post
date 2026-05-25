@@ -1,0 +1,177 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+/* ─── Layout ─── */
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 30px auto;
+}
+
+.card {
+    background: #fff;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+/* ─── Auth Forms ─── */
+.auth-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.auth-card {
+    background: #fff;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-card h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ─── Form Elements ─── */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+button, .btn {
+    width: 100%;
+    padding: 12px;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+button:hover, .btn:hover {
+    background: #444;
+}
+
+/* ─── Alerts ─── */
+.alert-error {
+    background: #ffe0e0;
+    color: #c0392b;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background: #e0ffe0;
+    color: #27ae60;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* ─── Navbar ─── */
+nav {
+    background: #222;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav ul li a:hover {
+    color: #fff;
+}
+
+/* ─── Footer ─── */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-size: 13px;
+}
+
+/* ─── Bottom link ─── */
+.bottom-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.bottom-link a {
+    color: #222;
+    font-weight: bold;
+}
+
+/* ─── Field Validation ─── */
+.input-error {
+    border-color: #e74c3c !important;
+    background: #fff8f8;
+}
+
+.field-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+input:focus {
+    outline: none;
+    border-color: #222;
+}
+
+input.input-error:focus {
+    border-color: #e74c3c;
+}
