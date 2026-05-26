@@ -1,6 +1,5 @@
 <?php
 // This captures the page content and renders the full layout
-
 function renderLayout($pageTitle, $contentCallback) {
     ob_start();
     $contentCallback();

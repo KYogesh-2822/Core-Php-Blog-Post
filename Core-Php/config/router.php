@@ -14,26 +14,26 @@ $routes = [
         'view'       => 'verify',
         'title'      => 'Verify Email'
     ],
-    'login'       => [
-        'controller' => 'handleLogin',
-        'view'       => 'login',
-        'title'      => 'Login'
-    ],
-    'create_post' => [
-        'controller' => 'handleCreatePost',
-        'view'       => 'create_post',
-        'title'      => 'Create Post'
-    ],
-    'post'        => [
-        'controller' => 'handlePost',
-        'view'       => 'post',
-        'title'      => 'Blog Post'
-    ],
-    'logout'      => [
-        'controller' => 'handleLogout',
-        'view'       => null,   // no view needed, just redirects
-        'title'      => ''
-    ],
+    // 'login'       => [
+    //     'controller' => 'handleLogin',
+    //     'view'       => 'login',
+    //     'title'      => 'Login'
+    // ],
+    // 'create_post' => [
+    //     'controller' => 'handleCreatePost',
+    //     'view'       => 'create_post',
+    //     'title'      => 'Create Post'
+    // ],
+    // 'post'        => [
+    //     'controller' => 'handlePost',
+    //     'view'       => 'post',
+    //     'title'      => 'Blog Post'
+    // ],
+    // 'logout'      => [
+    //     'controller' => 'handleLogout',
+    //     'view'       => null,   // no view needed, just redirects
+    //     'title'      => ''
+    // ],
     'resend_code' => [
         'controller' => 'handleResendCode',
         'view'       => null,   // no view, just redirects

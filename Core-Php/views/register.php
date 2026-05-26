@@ -10,13 +10,20 @@
             </div>
         <?php endif; ?>
 
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert-success">
+                <?= htmlspecialchars($_SESSION['success']) ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+
         <form method="POST" data-validate>
             <label>Full Name</label>
-            <input type="text" name="name" 
+            <input type="text" name="name"
                    value="<?= htmlspecialchars($name) ?>">
 
             <label>Email Address</label>
-            <input type="email" name="email" 
+            <input type="email" name="email"
                    value="<?= htmlspecialchars($email) ?>">
 
             <label>Password</label>
@@ -29,8 +36,8 @@
         </form>
 
         <div class="bottom-link">
-            Already have an account? 
-            <a href="login.php">Login</a>
+            Already have an account?
+            <a href="/login">Login</a>
         </div>
     </div>
 </div>

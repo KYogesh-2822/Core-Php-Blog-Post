@@ -7,6 +7,8 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+
+
 services:
   app:
     build:
@@ -19,6 +21,15 @@ services:
       - ./Core-Php:/var/www/html
     depends_on:
       - db
+    environment:
+      APP_ENV: development
+      MAIL_HOST: mailtrap
+      MAIL_PORT: 25
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM: noreply@phpblog.com
+      MAIL_FROM_NAME: PHP Blog
+      MAIL_ENCRYPTION: ""
 
   db:
     image: mysql:8.0
@@ -47,8 +58,66 @@ services:
     depends_on:
       - db
 
+  mailtrap:
+    image: eaudeweb/mailtrap
+    container_name: blog_mailtrap
+    ports:
+      - "8082:80"
+      - "1025:25"
+
 volumes:
   db_data:
+
+  
+# services:
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     container_name: core_php_blog_app
+#     ports:
+#       - "9001:80"
+#     volumes:
+#       - ./Core-Php:/var/www/html
+#     depends_on:
+#       - db
+
+#   db:
+#     image: mysql:8.0
+#     container_name: core_php_blog_db
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: core_php_blog
+#       MYSQL_USER: blog_user
+#       MYSQL_PASSWORD: blog_password
+#     ports:
+#       - "3307:3306"
+#     volumes:
+#       - db_data:/var/lib/mysql
+#       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+#   phpmyadmin:
+#     image: phpmyadmin:latest
+#     container_name: core_php_blog_phpmyadmin
+#     restart: always
+#     ports:
+#       - "8081:80"
+#     environment:
+#       PMA_HOST: db
+#       PMA_PORT: 3306
+#     depends_on:
+#       - db
+
+#   mailtrap:
+#       image: eaudeweb/mailtrap
+#       container_name: blog_mailtrap
+#       ports:
+#         - "8082:80"
+#         - "1025:25"
+
+# volumes:
+#   db_data:
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

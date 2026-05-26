@@ -6,5 +6,7 @@ error_reporting(E_ALL);
 require 'config/bootstrap.php';
 
 logInfo("index.php loaded", ['url' => $_SERVER['REQUEST_URI']]);
-
+logInfo("Session data", ['session' => $_SESSION]);
+logInfo("Request method", ['method' => $_SERVER['REQUEST_METHOD']]);
+logInfo("Current page details", ['page' => $current = $_GET['page'] ?? '']);
 runRouter($pdo, $routes);

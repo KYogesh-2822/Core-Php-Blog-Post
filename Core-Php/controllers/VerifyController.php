@@ -2,89 +2,125 @@
 
 function handleVerify($pdo) {
     $data = [
-        'errors'  => [],
-        'success' => '',
-        'email'   => $_SESSION['verify_email'] ?? ''
+        'errors'     => [],
+        'success'    => '',
+        'email'      => $_SESSION['verify_email'] ?? '',
+        'show_email' => !isset($_SESSION['verify_user_id']),
     ];
 
-    // ─── Guard: if no session, redirect to register ───
+    // ─── No session — let user enter email ───
     if (!isset($_SESSION['verify_user_id'])) {
-        header("Location: register");
-        exit;
-    }
 
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lookup_email'])) {
+            $email = trim($_POST['email'] ?? '');
+            $user  = getUserByEmail($pdo, $email);
+
+            if (!$user) {
+                $data['errors'][] = "No account found with that email.";
+                return $data;
+            }
+
+            if ($user['is_verified']) {
+                $data['errors'][] = "Account already verified. Please login.";
+                return $data;
+            }
+
+            // ─── Restore session and resend code ───
+            deleteVerificationCode($pdo, $user['id']);
+            $code = rand(100000, 999999);
+            saveVerificationCode($pdo, $user['id'], $code);
+
+            logVerificationCode($email, $code, 'RESEND');
+
+            logAuth("Code resent via email lookup", [
+                'user_id' => $user['id'],
+                'email'   => $email,
+                'code'    => $code
+            ]);
+
+            $_SESSION['verify_user_id'] = $user['id'];
+            $_SESSION['verify_email']   = $user['email'];
+
+            $data['email']      = $user['email'];
+            $data['show_email'] = false;
+            $data['success']    = "New code sent — check verification_log.txt";
+        }
+
         return $data;
     }
 
-    $enteredCode = trim($_POST['code'] ?? '');
-    $userId      = $_SESSION['verify_user_id'];
+    // ─── Has session — verify the code ───
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || isset($_POST['lookup_email'])) {
+        return $data;
+    }
 
-    // ─── Get code from database ───
+    $enteredCode  = trim($_POST['code'] ?? '');
+    $userId       = $_SESSION['verify_user_id'];
     $verification = getVerificationCode($pdo, $userId);
 
     if (!$verification) {
-        $data['errors'][] = "Verification code not found. Please register again.";
+        $data['errors'][] = "No code found. Please request a new one.";
         return $data;
     }
 
-    // ─── Check if code is expired (10 minutes) ───
-    $createdAt = strtotime($verification['created_at']);
-    $now       = time();
-    $diffMins  = ($now - $createdAt) / 60;
-
+    // ─── Check expiry 10 mins ───
+    $diffMins = (time() - strtotime($verification['created_at'])) / 60;
     if ($diffMins > 10) {
-        $data['errors'][] = "Code has expired. Please request a new one.";
+        $data['errors'][] = "Code expired. Please request a new one.";
         return $data;
     }
 
-    // ─── Check if code matches ───
+    // ─── Check code match ───
     if ($enteredCode !== $verification['code']) {
+        logAuth("Invalid verification code entered", ['user_id' => $userId]);
         $data['errors'][] = "Invalid code. Please try again.";
         return $data;
     }
 
-    // ─── Mark user as verified ───
+    // ─── Success ───
     verifyUser($pdo, $userId);
-
-    // ─── Clean up verification code ───
     deleteVerificationCode($pdo, $userId);
 
-    // ─── Clear session ───
+    // ─── Get user name for welcome email ───
+    $user = getUserById($pdo, $userId);
+    sendWelcomeEmail($user['email'], $user['name']);
+
+    logAuth("Email verified successfully", [
+        'user_id' => $userId,
+        'email'   => $data['email']
+    ]);
+
     unset($_SESSION['verify_user_id']);
     unset($_SESSION['verify_email']);
 
-    // ─── Redirect to login with success message ───
     $_SESSION['success'] = "Email verified! You can now login.";
-    header("Location: login");
+    header("Location: /login", true, 303);
     exit;
 }
 
 
 function handleResendCode($pdo) {
     if (!isset($_SESSION['verify_user_id'])) {
-        header("Location: register");
+        header("Location: /verify", true, 303);
         exit;
     }
 
     $userId = $_SESSION['verify_user_id'];
     $email  = $_SESSION['verify_email'];
 
-    // ─── Delete old code ───
     deleteVerificationCode($pdo, $userId);
-
-    // ─── Generate new code ───
     $code = rand(100000, 999999);
     saveVerificationCode($pdo, $userId, $code);
 
-    // ─── Log new code ───
-    file_put_contents(
-        ROOT . '/verification_log.txt',
-        date('Y-m-d H:i:s') . " | RESEND | $email | Code: $code\n",
-        FILE_APPEND
-    );
+    logVerificationCode($email, $code, 'RESEND');
 
-    $_SESSION['resend_success'] = "New code sent to $email";
-    header("Location: verify");
+    logAuth("Verification code resent", [
+        'user_id' => $userId,
+        'email'   => $email,
+        'code'    => $code
+    ]);
+
+    $_SESSION['resend_success'] = "New code sent — check verification_log.txt";
+    header("Location: /verify", true, 303);
     exit;
 }
